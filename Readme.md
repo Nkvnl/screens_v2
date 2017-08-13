@@ -11,13 +11,13 @@
 
 ### Things used to make the Project
 -------------------------------------------------------------------------------------------------------------
-- NodeJS
-- ExpressJS
-- Express-Session/Validaor
-- MongoDB(Mongoose/connect-mongo)
+- [NodeJS](https://nodejs.org/en/docs/)
+- [ExpressJS](https://expressjs.com/en/4x/api.html)
+- Express-[Session](https://github.com/expressjs/session)/[Validaor](https://github.com/ctavan/express-validator)
+- [MongoDB](https://www.mongodb.com/)([Mongoose](mongoosejs.com/docs/)/[connect-mongo](https://www.npmjs.com/package/connect-mongo))
 - [Stripe API](https://stripe.com/docs) for Credit Card Validation(You have to make your own Stripe ID to make it work
-- Handlebars
-- Passport
+- [Handlebars](http://handlebarsjs.com/)
+- [Passport](http://passportjs.org/docs)
 
 #### This Project has following functionalities-
       
