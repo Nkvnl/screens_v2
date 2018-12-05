@@ -1,9 +1,50 @@
+{{>header}}
+
+<div class="container-fluid" id="profile--header" style="height:40vh; background-position:top; background-image: linear-gradient(rgba(0,0,0,0.4), rgba(0,0,0,0.4)), url('https://images.pexels.com/photos/1467167/pexels-photo-1467167.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=650&w=940'); ">
+</div>    
+</div>
+
+<div class="container" id="profile">
 <div class="row">
-    <div class="col-md-8 col-md-offset-2">
-        <h1>User Profile</h1>
+    <div class="col-md-8 mx-auto">
+        <h1 class="my-3">Gegevens</h1>
         <hr>
-        <h2>My Orders</h2>
-        {{# each orders }}
+        <div class="row">
+            <div class="col-md-6">
+                <h3 class="">Naam </h3>         
+                <h4 class="">E-mail </h4>
+                 <h4 class="">Wachtwoord </h4>
+                <h5 class="">Straat</h5>  
+        <h5 class="">Huisnummer</h5>
+        <h5 class="">Postcode </h5> 
+        <h5 class="">Plaats </h5> 
+                <h5 class="mb-3">Land</h5>
+       
+            </div>
+            <div class="col-md-6">
+                
+          <button class="btn btn-outline-info float-right"><large><i class="far fa-edit"></i></large></button>
+          <h3 class="d-inline">{{users.name}}</h3>
+          {{#if admin}}
+                    <span class="badge badge-success d-inline">Administrator</span><a href="/dashboard"><span class="badge badge-info p-1 ml-2">Naar dashboard</span> </a>
+                  {{else}}
+             {{/if}}
+          <h4 class="">{{users.email}}</h4> 
+        <h4 class="">********</h4>
+         <h5 class="">{{users.street}}</h5>
+         <h5 class="">{{users.number}}</h5>
+         <h5 class="">{{users.zip}}</h5>
+         <h5 class="">{{users.city}}</h5>
+         <h5 class="">{{users.country}}</h5>
+       
+            </div>
+        </div>
+        <p></p>
+        <hr>
+        <h2>Bestellingen</h2>
+        
+        {{#if orders}}
+                {{# each orders }}
             <div class="panel panel-default">
                 <div class="panel-body">
                     <ul class="list-group">
@@ -20,5 +61,10 @@
                 </div>
             </div>
         {{/each}}
+        {{else}}
+        <h3 class="text-center alert alert-warning">Nog geen bestellingen</h3>
+
+        {{/if}}
     </div>
+</div>
 </div>

@@ -1,38 +1,72 @@
-Stripe.setPublishableKey('pk_test_m6ZWLYyvkUAqJzr1fvr1uRj2');
+// // Create a Stripe client.
+// // Note: this merchant has been set up for demo purposes.
+// var stripe = Stripe('pk_test_6pRNASCoBOKtIshFeQd4XMUh');
 
-var $form = $('#checkout-form');
+// // Create an instance of Elements.
+// var elements = stripe.elements();
 
-$form.submit(function (event) {
-    $('#charge-error').addClass('hidden');
-    $form.find('button').prop('disabled', true);
-    Stripe.card.createToken({
-        number: $('#card-number').val(),
-        cvc: $('#card-cvc').val(),
-        exp_month: $('#card-expiry-month').val(),
-        exp_year: $('#card-expiry-year').val(),
-        name: $('#card-name').val()
-    }, stripeResponseHandler);
-    return false;
-});
+// // Custom styling can be passed to options when creating an Element.
+// // (Note that this demo uses a wider set of styles than the guide below.)
+// var style = {
+//   base: {
+//     padding: '10px 12px',
+//     color: '#32325d',
+//     fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif',
+//     fontSmoothing: 'antialiased',
+//     fontSize: '16px',
+//     '::placeholder': {
+//       color: '#aab7c4'
+//     },
+//   },
+//   invalid: {
+//     color: '#fa755a',
+//   }
+// };
 
-function stripeResponseHandler(status, response) {
-    if (response.error) { // Problem!
+// // Create an instance of the idealBank Element.
+// var idealBank = elements.create('idealBank', {style: style});
 
-        // Show the errors on the form
-        $('#charge-error').text(response.error.message);
-        $('#charge-error').removeClass('hidden');
-        $form.find('button').prop('disabled', false); // Re-enable submission
+// // Add an instance of the idealBank Element into the `ideal-bank-element` <div>.
+// idealBank.mount('#ideal-bank-element');
 
-    } else { // Token was created!
+// var errorMessage = document.getElementById('error-message');
 
-        // Get the token ID:
-        var token = response.id;
+// // Handle form submission.
+// var form = document.getElementById('payment-form');
+// form.addEventListener('submit', function(event) {
+//   event.preventDefault();
+// //   showLoading();
 
-        // Insert the token into the form so it gets submitted to the server:
-        $form.append($('<input type="hidden" name="stripeToken" />').val(token));
+//   var sourceData = {
+//     type: 'ideal',
+//     amount: 100,
+//     currency: 'eur',
+//     owner: {
+//       name: document.querySelector('input[name="name"]').value,
+//     },
+//     // Specify the URL to which the customer should be redirected
+//     // after paying.
+//     redirect: {
+//       return_url: 'https://shop.example.com/crtA6B28E1',
+//     },
+//   };
 
-        // Submit the form:
-        $form.get(0).submit();
+//   // Call `stripe.createSource` with the idealBank Element and additional options.
+//   stripe.createSource(idealBank, sourceData).then(function(result) {
+//     if (result.error) {
+//       // Inform the customer that there was an error.
+//       errorMessage.textContent = result.error.message;
+//       errorMessage.classList.add('visible');
+//     //   stopLoading();
+//     } else {
+//       // Redirect the customer to the authorization URL.
+//       errorMessage.classList.remove('visible');
+//       stripeSourceHandler(result.source);
+//     }
+//   });
+// });
 
-    }
-}
+// function stripeSourceHandler(source) {
+//   // Redirect the customer to the authorization URL.
+//   document.location.href = source.redirect.url;
+// }

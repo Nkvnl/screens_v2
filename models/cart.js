@@ -18,7 +18,8 @@ module.exports = function Cart(oldCart) {
         this.items[id].qty--;
         this.items[id].price -= this.items[id].item.price;
         this.totalQty--;
-        this.totalPrice -= this.items[id].item.price;
+        this.totalPriceUnrounded -= this.items[id].item.price;
+        this.totalPrice = Math.round(this.totalPriceUnrounded);
 
         if (this.items[id].qty <= 0) {
             delete this.items[id];

@@ -1,0 +1,124 @@
+
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-md-2 p-0 m-0 sidebar">
+        {{>sidebar-admin}}
+        </div>
+        <div class="col-md-8 m-5">
+            <h1 class="text-center">Artikelen toevoegen</h1>  
+            <form action="/preview" method="POST">
+            <div class="row">
+                
+     <div class="col-lg-6 w-d-block" >
+    <div class="form-group">
+    <label for="exampleFormControlInput1">Naam </label>
+    <input type="text" class="form-control f1" name="title" id="exampleFormControlInput1" placeholder="Naam">
+  </div>
+  <div class="form-group">
+    <label for="exampleFormControlInput1">Prijs</label>
+    <input type="text" class="form-control f1" name="price" id="exampleFormControlInput1" placeholder="Prijs">
+  </div>
+   <div class="form-group">
+    <label for="exampleFormControlInput1">Preview foto <i class="far fa-question-circle text-info"></i></label>
+    <input type="text" class="form-control f1" name="imagePath" id="exampleFormControlInput1" placeholder="Link ">
+  </div>
+   <div class="form-group">
+    <label for="exampleFormControlInput1">Foto #2 <i class="far fa-question-circle text-info"></i></label>
+    <input type="text" class="form-control f1" name="imagePath1" id="exampleFormControlInput1" placeholder="Link ">
+  </div>
+   <div class="form-group">
+    <label for="exampleFormControlInput1">Foto #3 <i class="far fa-question-circle text-info"></i></label>
+    <input type="text" class="form-control f1" name="imagePath2" id="exampleFormControlInput1" placeholder="Link ">
+  </div>
+   <div class="form-group">
+    <label for="exampleFormControlInput1">Foto #4 <i class="far fa-question-circle text-info"></i></label>
+    <input type="text" class="form-control f1" name="imagePath3" id="exampleFormControlInput1" placeholder="Link ">
+  </div>
+     <div class="form-group">
+    <label for="exampleFormControlInput1">Foto #5 <i class="far fa-question-circle text-info"></i></label>
+    <input type="text" class="form-control f1" name="imagePath4" id="exampleFormControlInput1" placeholder="Link ">
+  </div>
+  </div>
+  <div class="col-md-6">
+  <div class="form-group">
+    <label for="exampleFormControlTextarea1">Korte beschrijving <i class="far fa-question-circle text-info"></i></label>
+    <textarea class="form-control" name="descriptionShort" id="exampleFormControlTextarea1" rows=5 placeholder=""></textarea>
+  </div>
+  <div class="form-group">
+    <label for="exampleFormControlTextarea1">Volledige beschrijving <i class="far fa-question-circle text-info"></i></label>
+    <textarea class="form-control" name="descriptionFull" id="exampleFormControlTextarea1" rows="18" placeholder="Beschrijving- Maximaal 2 regels!"></textarea>
+  </div>  
+    <button class="btn btn-outline-info m-auto" type="submit" data-toggle="modal" data-target="#exampleModal">Preview bekijken</button>
+        </form>
+    </div>
+    </div>
+    <hr>
+    <div>
+    <h2 class="mt-5">Artikel pagina <i class="fas fa-exclamation-circle float-right text-info"></i></h2>
+    </div>
+    <div id="preview" >
+        <h1 class="display-4  text-center">{{ previews.title }}</h1>
+    <div class="row" >
+    <div class="col-md-8" >
+        <img src="{{previews.imagePath}}" class="img-fluid" id="show--img">
+    </div>
+    <div class="col-md-4 p-4 text-right">
+        <p>
+            {{previews.descriptionFull}}
+        </p>
+        <hr>
+        <h2>€{{previews.price}}</h2>
+    </div>
+    </div>
+    <div class="row">
+        <div class="col-md-3">
+            <img src="{{previews.imagePath1}}" class="img-fluid p-2" >
+        </div>
+               <div class="col-md-3">
+            <img src="{{previews.imagePath2}}" class="img-fluid p-2" >
+        </div>
+               <div class="col-md-3">
+            <img src="{{previews.imagePath3}}" class="img-fluid p-2" >
+    </div>
+    <div class="col-md-3">
+                <a class="btn btn-outline-info" role="button">Add to Shopping Cart</a>
+
+    </div>
+</div>
+</div>
+<hr>
+    <div class="col-sm-10">
+                <h2 class="mt-5"> Artikel pagina: <i class="fas fa-exclamation-circle float-right text-info"></i></h2>
+
+    </div>
+    <div class="row" >
+        
+            <div class="col-sm-10 col-md-10 p-5" id="preview">
+                <div class="thumbnail">
+                    <div class="row">
+                            <div class="col-md-6">
+                            <img src="{{ previews.imagePath }}" alt="Product" class="img-fluid" >
+                        </div>
+                        <a>
+                        <div class="col-md-6">
+                        <h3>{{ previews.title }}</h3>
+                        <p class="description">{{ previews.descriptionShort }}</p>
+                        <div class="clearfix">
+                            <div class="price float-left">€{{ previews.price }}</div>
+                            <a class="btn btn-outline-info float-right" role="button">In Winkelwagen</a>
+                        </div>                            
+                        </div>
+                        </a>
+                    </div>
+                    <div class="caption">
+
+                    </div>
+                </div>
+            </div>
+    </div>
+<form action="/add" method="POST" class="">
+        <div class="text-right mt-2">
+    <button class="btn btn-success m-auto "  type="submit" data-toggle="modal" data-target="#exampleModal">Toevoegen</button>
+</div>
+        </form>
+</div>

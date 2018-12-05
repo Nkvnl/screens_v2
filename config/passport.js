@@ -13,6 +13,7 @@ passport.deserializeUser(function (id, done) {
 });
 
 passport.use('local.signup', new LocalStrategy({
+    // passReqToCallBack: true,
     usernameField: 'email',
     passwordField: 'password',
     passReqToCallback: true
@@ -37,6 +38,13 @@ passport.use('local.signup', new LocalStrategy({
         var newUser = new User();
         newUser.email = email;
         newUser.password = newUser.encryptPassword(password);
+        newUser.street = req.body.street;
+        newUser.name = req.body.name;
+        newUser.number = req.body.number;
+        newUser.zip = req.body.zip;
+        newUser.city = req.body.city;
+        newUser.country = req.body.country;
+        newUser.admin = req.body.isAdmin
         newUser.save(function(err, result) {
            if (err) {
                return done(err);

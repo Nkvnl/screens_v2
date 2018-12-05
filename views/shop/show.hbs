@@ -1,0 +1,36 @@
+ <script src="javascripts/scroll.js"></script>
+{{>header}}
+<div class="container-fluid" id="show--header" style="height:40vh; background-position:top; background-image: linear-gradient(rgba(0,0,0,0.4), rgba(0,0,0,0.4)), url('https://images.pexels.com/photos/1467167/pexels-photo-1467167.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=650&w=940'); ">
+</div>    
+</div>
+
+<div class="container" style="">
+        <h1 class="display-4 pt-5 text-center">{{ products.title }}</h1>
+    <div class="row">
+    <div class="col-md-8">
+        <img src="{{products.imagePath}}" class="img-fluid" id="show--img">
+    </div>
+    <div class="col-md-4 p-5 text-right">
+        <p>{{products.descriptionFull</p>
+        <hr>
+        <h2>€ {{products.price}}</h2>
+        <a href="/add-to-cart/{{this._id}}" class="btn btn-outline-info" role="button">Add to Shopping Cart</a>
+    </div>
+    </div>
+    <div class="row">
+        <div class="col-md-3">
+            <img src="{{products.imagePath1}}" class="img-fluid" id="show--img">
+        </div>
+               <div class="col-md-3">
+            <img src="{{products.imagePath2}}" class="img-fluid" id="show--img">
+        </div>
+               <div class="col-md-3">
+            <img src="{{products.imagePath3}}" class="img-fluid" id="show--img">
+        </div>
+               <div class="col-md-3">
+            <img src="{{products.imagePath4}}" class="img-fluid" id="show--img">
+        </div>
+    </div>
+</div>
+
+{{>footer}}

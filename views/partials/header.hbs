@@ -1,40 +1,48 @@
-<nav class="navbar navbar-default">
-    <div class="container-fluid">
-        <!-- Brand and toggle get grouped for better mobile display -->
-        <div class="navbar-header">
-            <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1" aria-expanded="false">
-                <span class="sr-only">Toggle navigation</span>
-                <span class="icon-bar"></span>
-                <span class="icon-bar"></span>
-                <span class="icon-bar"></span>
-            </button>
-            <a class="navbar-brand" href="/">Brand</a>
-        </div>
 
-        <!-- Collect the nav links, forms, and other content for toggling -->
-        <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
-            <ul class="nav navbar-nav navbar-right">
-                <li>
-                    <a href="/shopping-cart/">
-                        <i class="fa fa-shopping-cart" aria-hidden="true"></i> Shopping Cart
-                        <span class="badge">{{session.cart.totalQty}}</span>
+<nav class="navbar navbar-expand-lg navbar-dark fixed-top">
+  <a class="navbar-brand nav-links" href="/">BRAND</a>
+  <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+    <span class="navbar-toggler-icon"></span>
+  </button>
+  <div class="collapse navbar-collapse" id="navbarNav">
+      <ul class="nav navbar-nav  ml-auto">
+                <li class="mx-auto">
+                    
+                   
+                    <a class="mx-4 nav-links px-2" href="/shopping-cart/">
+                         Sneakers
                     </a>
+                    <a class="mx-4 nav-links px-2" href="/shopping-cart/">
+                         Brands
+                    </a>
+                    <a class="mx-4 nav-links px-2" href="/shopping-cart/">
+                         Sale
+                    </a>     
+                    <a class="mx-4 nav-links px-2 " href="/shopping-cart/">
+                         Over ons
+                    </a>
+                    <a href="/shopping-cart/"  class="hideOnScroll nav-links px-5">
+                      <img src="../img/icons/basket.png" width="30px">  Winkelwagen
+                        <span class="badge badge-info ">{{session.cart.totalQty}}</span>
+                    </a>
+                    {{!-- <a class="mx-4 nav-links px-2 hideOnScroll" href="/shopping-cart/">--}}
+                    {{!--    <img src="../img/icons/Untitled.png" width="35px">--}}
+                    {{!--</a>--}}
+                    
                 </li>
-                <li class="dropdown">
-                    <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false"><i class="fa fa-user" aria-hidden="true"></i> User Management <span class="caret"></span></a>
-                    <ul class="dropdown-menu">
                         {{# if login }}
-                            <li><a href="/user/profile">User Account</a></li>
-                            <li role="separator" class="divider"></li>
-                            <li><a href="/user/logout">Logout</a></li>
+                            <a class="hideOnScroll nav-links px-3" href="/user/logout"> <img src="../img/icons/signin.png" width="27px"> Logout</a>
+                        {{# if admin }}
+                            <span class="badge badge-success p-2">Admin</span>
+                            <a class="hideOnScroll nav-links px-3" href="/dashboard"><img src="../img/icons/dash.png" width="30px"> Dashboard</a>
+                        {{else}}
+                            <a class="hideOnScroll nav-links px-3" href="/user/profile"><img src="../img/icons/user.png" width="30px">Account</a>
+                        {{/if}}
                         {{ else }}
-                            <li><a href="/user/signup">Sign up</a></li>
-                            <li><a href="/user/signin">Sign in</a></li>
+                            <a class="hideOnScroll nav-links px-3" href="/user/signin"><img src="../img/icons/signout.png" width="30px"> Login</a>
                         {{/if}}
 
-                    </ul>
-                </li>
+
             </ul>
-        </div><!-- /.navbar-collapse -->
-    </div><!-- /.container-fluid -->
+  </div>
 </nav>

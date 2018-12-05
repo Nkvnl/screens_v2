@@ -11,6 +11,10 @@ var passport = require('passport');
 var flash = require('connect-flash');
 var validator = require('express-validator');
 var MongoStore = require('connect-mongo')(session);
+var isAdmin = require('./middleware/middleware');
+var Analytics = require('analytics-node');
+var analytics = new Analytics('YOUR_WRITE_KEY');
+
 
 var routes = require('./routes/index');
 var userRoutes = require('./routes/user');
@@ -42,6 +46,16 @@ app.use(flash());
 app.use(passport.initialize());
 app.use(passport.session());
 app.use(express.static(path.join(__dirname, 'public')));
+
+
+app.use(function(req,res,next){
+  if(!req.user){
+    next();
+  } else {
+    res.locals.admin = req.user.isAdmin
+    next();
+  }
+});
 
 app.use(function(req, res, next) {
     res.locals.login = req.isAuthenticated();
@@ -85,3 +99,7 @@ app.use(function(err, req, res, next) {
 
 
 module.exports = app;
+
+app.listen(process.env.PORT, process.env.IP, function() { // tell node to listen & define a port to view app
+    console.log("eCommerce web server starting...");
+});
