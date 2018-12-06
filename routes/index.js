@@ -128,7 +128,7 @@ router.post('/charge', isLoggedIn, function(req, res, next){
         name: req.body.name,
     },
         redirect: {
-            return_url: 'https://webshop-template-niekavanlosenoord.c9users.io/charge',
+            return_url: 'https://webshop-template-niekavanlosenoord.c9users.io/webhook',
         }
         }).then(function(result){
             console.log(result)
@@ -136,9 +136,24 @@ router.post('/charge', isLoggedIn, function(req, res, next){
         })
 })
 // Webhook
-router.post('/charge', function(req, res){
+router.post('/webhook', function(request, response) {
+  // Retrieve the request's body and parse it as JSON:
+    if(request.body.type === 'source.chargeable'){
+        console.log('it is!')
+    } else {
+        console.log('it isnt!')
+    }
+//   const event_json = JSON.parse(request.body);
+  // Do something with event_json
 
-})
+  response.send(200);
+});
+
+router.get('/webhook', function(req, res){
+    res.send('webhook')
+    // console.log(req.query)
+    console.log('this is the webhook')
+});
 
 router.get('/charge', function(req, res){
     var stripe = require("stripe")("sk_test_DOdZsdHz1smVYLx6q5IUvktO");
@@ -149,9 +164,13 @@ stripe.charges.create({
   currency: "eur",
   source: req.query.source,
 }).then( function(err, charge) {
-    console.log(charge)
-    });
+    if(err){
+        console.log(charge)
+    } else {
     res.render('shop/charge')
+    }
+    
+});
 });
 
 
