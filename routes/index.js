@@ -131,22 +131,35 @@ router.post('/charge', isLoggedIn, function(req, res, next){
             return_url: 'https://webshop-template-niekavanlosenoord.c9users.io/webhook',
         }
         }).then(function(result){
-            console.log(result)
+            // console.log(result)
             res.redirect(result.redirect.url)
         })
 })
 // Webhook
-router.post('/webhook', function(request, response) {
+router.post('/webhook', function(req, res) {
   // Retrieve the request's body and parse it as JSON:
-    if(request.body.type === 'source.chargeable'){
-        console.log('it is!')
+    if(req.body.type === 'source.chargeable'){
+        console.log('it is!');
+        // console.log(req.body);
+        console.log(req.body.data.object.type);
+        stripe.charges.create({
+            amount: req.body.data.object.amount,
+            currency: req.body.data.object.currency,
+            source: req.body.data.object.id,
+            // object: req.body.data.object.type,
+        }).then( function(err, charge) {
+    if(err){
+        console.log(charge)
+    res.render('shop/charge')
     } else {
         console.log('it isnt!')
     }
 //   const event_json = JSON.parse(request.body);
   // Do something with event_json
 
-  response.send(200);
+//   res.send(200);
+});
+}
 });
 
 router.get('/webhook', function(req, res){
