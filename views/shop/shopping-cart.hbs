@@ -4,17 +4,16 @@
 
 {{# if products }}
     <div class="row mt-5 pt-5 ">
-        <div class="col-sm-6 col-md-6 mx-auto bg-light p-5"  id="shopping-cart-list" >
+        <div class="col-sm-8 col-md-8 mx-auto bg-light p-5"  id="shopping-cart-list" >
             <ul class="list-group">
 {{# each products }}
                 <div class="thumbnail">
                     <div class="row">
-                        <div class="col-md-4">
-                            <img id="border-primary" src="{{ item.imagePath }}" alt="..." class="img-fluid">
-                                                    <div class="price pull-left p-2">€{{ item.price }}</div>
+                        <div class="col-md-3">
+                            <img  src="{{ item.imagePath }}" alt="..." class="img-fluid">
     
                         </div>
-                        <div class="col-md-6">
+                        <div class="col-md-7">
                         <h3>{{ this.item.title }}</h3>
                         <p class="description">{{ item.descriptionShort }}</p>
                         <div class="clearfix">
@@ -30,6 +29,7 @@
                                 <li><a href="/remove/{{this.item._id}}"><i class="fas fa-trash"></i></a></li>
                             </ul>
                         </div>
+                            <div class="price pull-left p-2">€{{ totalprice }}</div>
                         </div>
                     </div>
                     <hr>
@@ -42,8 +42,8 @@
         </div>
     </div>
     <div class="row">
-        <div class="col-sm-6 mx-auto bg-light pb-5 mb-5">
-        <div class="col-sm-6 col-md-6 d-inline mb-5" >
+        <div class="col-sm-8 mx-auto bg-light pb-5 mb-5">
+        <div class="col-sm-8 col-md-6 d-inline mb-5" >
             <strong>Totaal: €{{ totalPrice }}</strong>
         </div>
         <div class="col-sm-6 col-md-6 d-inline">

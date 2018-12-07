@@ -126,12 +126,12 @@ font-family: 'Lato', sans-serif;
 
 #cart-bg{
     margin-top:-50px;
-    background: linear-gradient(rgba(9, 187, 197,.6), rgba(117, 236, 255,.9)), url('https://images.pexels.com/photos/90365/pexels-photo-90365.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=650&w=940'); 
+    background: linear-gradient(rgba(0, 0, 0,.2), rgba(0,0,0,.2)), url('https://images.pexels.com/photos/572487/pexels-photo-572487.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=650&w=940'); 
     
 }
 
 #shopping-cart-list hr{
-    border:1px solid #4C4C4C;
+    /*border:1px solid #4C4C4C;*/
 }
 
 #shopping-cart-list {
@@ -511,3 +511,35 @@ footer a{
     color:#333;
 }
 
+/*SUCCESS-PAGE*/
+#success-background{
+    height:100vh;
+    width:100%;
+    background:url('https://images.pexels.com/photos/572487/pexels-photo-572487.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=650&w=940');
+    background-position:center center;
+    background-size:cover;
+}
+
+#success-box{
+    padding-top:2vh;
+    background:white;
+    box-shadow:0px 20px 40px rgba(0,0,0,0.5);
+    height:100%;
+}
+
+/*CHECKOUT*/
+#cart-checkout{
+    height:100vh;
+    background:white;
+    box-shadow:0px 20px 40px rgba(0,0,0,0.5);
+}
+
+#cart-checkout .total{
+    position:absolute;
+    bottom:10px;
+}
+
+#checkout-box{
+    background:white;
+    box-shadow:0px 20px 40px rgba(0,0,0,0.5);
+}

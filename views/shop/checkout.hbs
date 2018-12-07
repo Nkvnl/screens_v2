@@ -1,8 +1,10 @@
 <link rel='stylesheet' href='/stylesheets/stripe.css'/>
-<div class="row">
-    <div class="col-sm-6 col-md-4 mx-auto my-5">
-        <h1>Checkout</h1>
-        <h4>Your Total: €{{total}}</h4>
+<div class="container-fluid" id="success-background">
+<div class="row h1-00">
+    <div class="col-sm-8 col-md-8">
+<div class="mx-auto col-sm-6 m-5 p-5" id="checkout-box">
+        <h1 class="text-center">Betalen via iDeal</h1>
+        <hr>
         <div id="charge-error" class="alert alert-danger {{#if noError}}d-none{{/if}}">
             {{errMsg}}
         </div>
@@ -14,29 +16,29 @@
   integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8="
   crossorigin="anonymous"></script> 
 <script src="https://js.stripe.com/v3/"></script>
-
-<form id="payment-form" action="/charge" method="post">
+<form id="payment-form"  action="/charge" method="post">
   <div class="form-row">
     <label for="name">
-      Name
+      Naam
     </label>
-    <input id="name" name="name" placeholder="Jenny Rosen" required>
+    <input id="name" name="name" placeholder="Naam" required>
   </div>
 
   <div class="form-row">
     <label for="ideal-bank-element">
-      iDEAL Bank
+      Bank
     </label>
     <div id="ideal-bank-element">
       <!-- A Stripe Element will be inserted here. -->
     </div>
   </div>
 
-  <button>Submit Payment</button>
+  <button class="btn btn-outline-info mt-4 w-100">Naar bank</button>
 
   <!-- Used to display form errors. -->
     <div id="error-message" role="alert"></div>
 </form>
+</div>
 
 <script>
 var stripe = Stripe('pk_test_6pRNASCoBOKtIshFeQd4XMUh');
@@ -53,7 +55,7 @@ var style = {
     fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif',
     fontSmoothing: 'antialiased',
     fontSize: '16px',
-    '::placeholder': {
+    '::Selecteer uw bank': {
       color: '#aab7c4'
     },
   },
@@ -70,47 +72,39 @@ idealBank.mount('#ideal-bank-element');
 
 var errorMessage = document.getElementById('error-message');
 
-// // Handle form submission.
-// var form = document.getElementById('payment-form');
-// form.addEventListener('submit', function(event) {
-//   event.preventDefault();
-//   // showLoading();
-
-//   var sourceData = {
-//     type: 'ideal',
-//     amount: '{{total}}' * 100,
-//     currency: 'eur',
-//     owner: {
-//       name: document.querySelector('input[name="name"]').value,
-//     },
-//     // Specify the URL to which the customer should be redirected
-//     // after paying.
-//     redirect: {
-//       return_url: 'https://webshop-template-niekavanlosenoord.c9users.io/success',
-//     },
-//   };
-
-//   // Call `stripe.createSource` with the idealBank Element and additional options.
-//   stripe.createSource(idealBank, sourceData).then(function(result) {
-//     if (result.error) {
-//       // Inform the customer that there was an error.
-//       errorMessage.textContent = result.error.message;
-//       errorMessage.classList.add('visible');
-//       // stopLoading();
-//     } else {
-//       // Redirect the customer to the authorization URL.
-//       errorMessage.classList.remove('visible');
-//       stripeSourceHandler(result.source);
-//     }
-//   });
-// });
-
-// function stripeSourceHandler(source) {
-//   // Redirect the customer to the authorization URL.
-//   document.location.href = source.redirect.url;
-// }
 // </script>
 {{!--<script src="javascripts/checkout.js"></script>--}}
 
+</div>
+<div class="col-sm-4" id="cart-checkout">
+  {{# each products }}
+                <div class="thumbnail">
+                    <div class="row">
+                        <div class="col-md-3">
+                            <img  src="{{ item.imagePath }}" alt="..." class="img-fluid m-4">
+    
+                        </div>
+                        <div class="col-md-6 ml-4 mt-4">
+                        <h5>{{ this.item.title }}</h5>
+                        <div class="clearfix">
+                      
+                        </div>                            
+                        </div>
+                        <div class="col-md-2 mt-4">
+                              <div class="price pull-left p-2">€{{ item.price }} <span class="badge badge-info">{{ this.qty }}</span></div>
+                        </div>
+                    </div>
+                    <hr>
+                    <div class="caption">
+
+                    </div>
+                </div>
+        {{/each}}
+<div class="total">
+  <hr>
+      <h2>Totaal : €{{total}}</h2>
+  </div>
+</div>
+</div>
 </div>
 </div>

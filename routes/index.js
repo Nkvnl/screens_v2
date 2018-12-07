@@ -18,6 +18,78 @@ event = null;
 var middleware= require('../middleware/middleware')
 const {isAdmin } = middleware;
 
+
+////////////////////////////////////////////////////
+ function createCharge(id, events, type, amount, currency, source, req, res) {
+    setTimeout(() => {
+       event = (id)
+    events = event;
+    // console.log(event)
+    // console.log('this is the event!')
+    if(type === 'charge.succeeded'){
+        // console.log(req.body.type)
+        return res.sendStatus(200);
+    } else {
+    if(type === 'source.chargeable'){
+        // console.log('it is!');
+        // console.log(req.body);
+        stripe.charges.create({
+            amount: amount,
+            currency: currency,
+            source: source,
+            // object: req.body.data.object.type,
+        }).then( function(charge) {
+            // var reqbody = req.body;
+            // console.log('render');
+            // console.log(reqbody)
+            return res.sendStatus(200)
+            // return res.render('shop/charge',{reqbody : reqbody})
+        });
+            } else {
+                return res.redirect('/checkout');
+        }  
+    }
+},1000)
+};  
+
+/////////////////////////////////////////////////////////
+
+
+function redirect(req, res){
+       setTimeout(() => {
+        var stripe = require("stripe")("sk_test_DOdZsdHz1smVYLx6q5IUvktO");
+        console.log(String(event))
+        console.log('this is the var^^^^^^')
+        console.log(event)
+        console.log('this is the event^^^^^^^')
+        User.findById(req.user.id, function(err, foundUser){
+    stripe.events.retrieve(
+        String(event),
+         function(err, events) {
+            var currency = events.data.object.currency;
+            var amount = events.data.object.amount / 100;
+            if (err){
+                console.log(err)
+            } else {
+                console.log(events.type)
+                if(events.type === 'source.chargeable' || events.type ==='charge.succeeded'){
+                // if(events.type === 'charge.succeeded' || events.type === 'source.chargeable' ){
+                    console.log('chargeable or succeeded')
+                    return res.render('shop/success', {users : foundUser, amount:amount, currency: currency} )
+                }
+                if(events.type === 'source.cancelled' || events.type === 'source.failed'){
+                    return res.redirect('/checkout')
+                }
+                else {
+                    return res.redirect('/checkout')
+                }
+    };
+});
+});
+       }, 5000)
+}
+
+
 function exit() {
     mongoose.disconnect();
 }
@@ -107,7 +179,7 @@ router.get('/checkout', isLoggedIn, function(req, res, next) {
     }
     var cart = new Cart(req.session.cart);
     var errMsg = req.flash('error')[0];
-    res.render('shop/checkout', {total: cart.totalPrice, errMsg: errMsg, noError: !errMsg});
+    res.render('shop/checkout', {products: cart.generateArray(), total: cart.totalPrice, errMsg: errMsg, noError: !errMsg});
 });
 
 router.post('/charge', isLoggedIn, function(req, res, next){
@@ -136,33 +208,7 @@ router.post('/charge', isLoggedIn, function(req, res, next){
 
 // Webhook
 router.post('/webhook', function(req, res) {
-    event = await (req.body.id)
-    req.session.event = event;
-    // console.log(event)
-    // console.log('this is the event!')
-    if(req.body.type === 'charge.succeeded'){
-        // console.log(req.body.type)
-        return res.sendStatus(200);
-    } else {
-    if(req.body.type === 'source.chargeable'){
-        // console.log('it is!');
-        // console.log(req.body);
-        stripe.charges.create({
-            amount: req.body.data.object.amount,
-            currency: req.body.data.object.currency,
-            source: req.body.data.object.id,
-            // object: req.body.data.object.type,
-        }).then( function(charge) {
-            // var reqbody = req.body;
-            // console.log('render');
-            // console.log(reqbody)
-            return res.sendStatus(200)
-            // return res.render('shop/charge',{reqbody : reqbody})
-        });
-        } else {
-         return res.redirect('/checkout');
-    }  
-    }
+    createCharge(req.body.id, req.session.event, req.body.type, req.body.data.object.amount, req.body.data.object.currency, req.body.data.object.id, req, res)
 });
 
 // router.post('/webhook', function(req, res){
@@ -174,35 +220,46 @@ router.post('/webhook', function(req, res) {
 // });
 
 router.get('/shop/charge/', function(req, res){
-var stripe = require("stripe")("sk_test_DOdZsdHz1smVYLx6q5IUvktO");
-        console.log(String(event))
-        console.log('this is the var^^^^^^')
-        console.log(event)
-        console.log('this is the event^^^^^^^')
-    stripe.events.retrieve(
-        String(event),
-         function(err, events) {
-            if (err){
-                console.log(err)
-            } else {
-                if(events.type === 'source.chargeable'){
-                    console.log('chargeable')
-                }
-                if(events.type === 'source.cancelled'){
-                    console.log('cancelled')
-                }
-                if(events.type === 'source.failed'){
-                    console.log('failed')
-                } else {
-                    console.log('end of statement')
-                }
-                console.log(events.id)
-                console.log(events.data.object.amount)
-                console.log(events.type)
-    };
-    res.render('shop/charge')
+    redirect(req, res)
+    // res.render('shop/charge')
 });
+
+router.get('/shop/charge/success', function(req, res){
+    res.render('shop/success')
+    // res.render('shop/charge')
 });
+
+
+// router.get('/shop/charge/', function(req, res){
+// var stripe = require("stripe")("sk_test_DOdZsdHz1smVYLx6q5IUvktO");
+//         console.log(String(event))
+//         console.log('this is the var^^^^^^')
+//         console.log(event)
+//         console.log('this is the event^^^^^^^')
+//     stripe.events.retrieve(
+//         String(event),
+//          function(err, events) {
+//             if (err){
+//                 console.log(err)
+//             } else {
+//                 if(events.type === 'source.chargeable'){
+//                     console.log('chargeable')
+//                 }
+//                 if(events.type === 'source.cancelled'){
+//                     console.log('cancelled')
+//                 }
+//                 if(events.type === 'source.failed'){
+//                     console.log('failed')
+//                 } else {
+//                     console.log('end of statement')
+//                 }
+//                 console.log(events.id)
+//                 console.log(events.data.object.amount)
+//                 console.log(events.type)
+//     };
+//     res.render('shop/charge')
+// });
+// });
 
 
 
