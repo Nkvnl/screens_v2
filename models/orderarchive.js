@@ -8,4 +8,4 @@ var schema = new Schema({
     time:{ type:String, required: true},
 });
 
-module.exports = mongoose.model('Order', schema);
+module.exports = mongoose.model('orderArchive', schema);

@@ -12,7 +12,8 @@ var userSchema = new Schema({
     city: {type: String, required: true},
     zip: {type: String, required: true},
     country: {type: String, required: true},
-    
+    cart: { type:Object},
+    paymentId: { type:String},
 });
 
 userSchema.methods.encryptPassword = function(password) {

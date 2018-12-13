@@ -2,16 +2,18 @@
     <!-- Sidebar -->
     <nav id="sidebar">
         <ul class="list-unstyled components ">
+            <a href="/">
               <li class="admin-brand" >
                   <h2 class="p-3 text-center">BRAND</h2>
                 </li>
+            </a>
                 <li class="admin-user" >
                     <div class="row p-3">
                         <div class="col-sm-4">
                             <img src="../../img/icons/user.png" class="img-fluid mt-2 ml-3">
                         </div>
                         <div class="col-sm-6">
-                            <h6><strong class="d-inline">{{users.name}}</strong></h6><span class="badge badge-success d-inline">ADMIN</span>
+                            <h6><strong class="d-inline">Gebruiker</strong></h6><span class="badge badge-success d-inline">ADMIN</span>
                         </div>
                     </div>
                     <hr>
@@ -35,34 +37,28 @@
                         <a href="/dashboard/design-aanpassen"><img src="../../img/icons/edit.png" height="20px"> Design aanpassen</a>
                     </li>
                     <hr>
-                    <li>
-                        <a href="#"> <img src="../../img/icons/order.png" height="20px"> Recente bestellingen</a>
+                    <li >
+                        {{# if recentOrders}}
+                        <span class="badge badge-danger mr-1" id="counter">{{recentOrders}}</span>
+                        {{else}}
+                        {{/if}}
+                        <a href="/dashboard/bestellingen-recent"> <img src="../../img/icons/order.png" height="20px"> Recente bestellingen</a>
                     </li>
                     <li>
-                        <a href="#"><img src="../../img/icons/archive.png" height="20px"> Bestelarchief</a>
+                        <a href="/dashboard/bestellingen-archief"><img src="../../img/icons/archive.png" height="20px"> Bestelarchief</a>
                     </li>
                     <li>
                         <a href="/dashboard/mailinglist"><img src="../../img/icons/mail.png" height="20px"> Mailinglijst</a>
                     </li>
                     <hr>
                      <li >
-                        <a href="#"><img src="../../img/icons/admins.png" height="20px"> Admins bekijken</a>
-                    </li>
-                    <li >
-                        <a href="#"><img src="../../img/icons/admindel.png" height="20px"> Admin verwijderen</a>
-                    </li>
+                        <a href="/dashboard/handleiding"><img src="../../img/icons/book.png" height="20px"> Handleiding</a>
                      <li >
-                        <a href="#"><img src="../../img/icons/adminadd.png" height="20px"> Admin toevoegen</a>
-                    </li>
-                    <hr>
-                     <li >
-                        <a href="#"><img src="../../img/icons/book.png" height="20px"> Handleiding</a>
-                     <li >
-                        <a href="#"><img src="../../img/icons/user.png" height="20px"> Contact opnemen</a>
+                        <a href="/dashboard/contact"><img src="../../img/icons/user.png" height="20px"> Contact opnemen</a>
                     </li>
                     </li>
                      <li >
-                        <a class="" href="#"><img src="../img/icons/error.png" height="20px"> Een fout melden</a>
+                        <a href="/dashboard/een-fout-melden"><img src="../img/icons/error.png" height="20px"> Een fout melden</a>
                     </li>
                 </ul>
         </ul>

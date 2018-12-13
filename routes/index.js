@@ -3,7 +3,7 @@ var router = express.Router();
 var Cart = require('../models/cart');
 var mongoose = require('mongoose');
 var stripe = require("stripe")("sk_test_DOdZsdHz1smVYLx6q5IUvktO");
-
+var env = require('dotenv').config();
 var Product = require('../models/product');
 var Title = require('../models/title');
 var Title1 = require('../models/title1');
@@ -11,15 +11,17 @@ var Title2 = require('../models/title2');
 var Title3 = require('../models/title3');
 var Title4 = require('../models/title4');
 var Order = require('../models/order');
+var archivedOrder = require('../models/orderarchive');
 var User = require('../models/user');
 var Preview = require('../models/productpreview');
-var Headerpreview = require('../models/headerpreview')
+var Headerpreview = require('../models/headerpreview');
+var middleware = require('../middleware/middleware');
+var nodemailer = require('nodemailer') ;
+var dotenv = require('dotenv').config();
+ 
+
 event = null;
-var middleware= require('../middleware/middleware')
-const {isAdmin } = middleware;
 
-
-////////////////////////////////////////////////////
  function createCharge(id, events, type, amount, currency, source, req, res) {
     setTimeout(() => {
        event = (id)
@@ -66,28 +68,62 @@ function redirect(req, res){
     stripe.events.retrieve(
         String(event),
          function(err, events) {
+            var cart = new Cart(req.session.cart);
             var currency = events.data.object.currency;
             var amount = events.data.object.amount / 100;
+            var unixTime = events.created
+            var time = timeConverter(unixTime)
             if (err){
                 console.log(err)
             } else {
                 console.log(events.type)
+                console.log(foundUser)
                 if(events.type === 'source.chargeable' || events.type ==='charge.succeeded'){
                 // if(events.type === 'charge.succeeded' || events.type === 'source.chargeable' ){
                     console.log('chargeable or succeeded')
-                    return res.render('shop/success', {users : foundUser, amount:amount, currency: currency} )
+                    console.log(cart)
+                    var order = new Order({
+                        user : foundUser,
+                        cart: cart,
+                        paymentId : events.data.object.id,
+                        time: time,
+                    })
+                    order.save(function(err, result){
+                        if(err){
+                            console.log(err)
+                        } else {
+                            console.log(order)
+                        return res.render('shop/success', {users : foundUser, amount:amount, currency: currency, order: order, item :order.cart.generateArray()})
+                        }
+                    })
+                    req.session.cart = null;
                 }
                 if(events.type === 'source.cancelled' || events.type === 'source.failed'){
-                    return res.redirect('/checkout')
+                    return res.render('shop/checkout')
                 }
-                else {
-                    return res.redirect('/checkout')
-                }
+                // else {
+                //     return res.render('shop/checkout')
+                // }
     };
 });
 });
        }, 5000)
 }
+
+
+function timeConverter(created){
+  var a = new Date(created * 1000);
+  var months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+  var year = a.getFullYear();
+  var month = months[a.getMonth()];
+  var date = a.getDate();
+  var hour = a.getHours() + 1;
+  var min = a.getMinutes();
+  var sec = a.getSeconds();
+  var time = date + ' ' + month + ' ' + year + ' ' + hour + ':' + min + ':' + sec ;
+  return time;
+}
+console.log(timeConverter(0));
 
 
 function exit() {
@@ -147,14 +183,14 @@ router.get('/add-to-cart/:id', function(req, res, next) {
     });
 });
 
-// router.get('/reduce/:id', function(req, res, next) {
-//     var productId = req.params.id;
-//     var cart = new Cart(req.session.cart ? req.session.cart : {});
+router.get('/reduce/:id', function(req, res, next) {
+    var productId = req.params.id;
+    var cart = new Cart(req.session.cart ? req.session.cart : {});
 
-//     cart.reduceByOne(productId);
-//     req.session.cart = cart;
-//     res.redirect('/shopping-cart');
-// });
+    cart.reduceByOne(productId);
+    req.session.cart = cart;
+    res.redirect('/shopping-cart');
+});
 
 router.get('/remove/:id', function(req, res, next) {
     var productId = req.params.id;
@@ -377,17 +413,26 @@ router.get('/shop/charge/success', function(req, res){
 
 //DASHBOARD ROUTES//
 
-router.get('/dashboard', isAdmin, function(req, res, next){
-        var totalItems = Product.length + 1;
-        var totalUsers = User.length + 1;
-        User.findById(req.user.id, function(err, foundUser){
-       res.render('admin/dashboard', {users: foundUser, totalItems : totalItems, totalUsers:totalUsers}) 
+router.get('/dashboard',isLoggedIn, isAdmin, function(req, res, next){
+        Order.count(function(err,recentOrders){
+            archivedOrder.count(function(err, completedOrders){
+                User.count(function(err, totalUsers){
+                    Product.count(function(err,totalItems){
+        // console.log(Order.length)
+                User.findById(req.user.id, function(err, foundUser){
+                res.render('admin/dashboard', {users: foundUser, totalItems : totalItems, totalUsers:totalUsers, completedOrders : completedOrders, recentOrders : recentOrders}) 
+                    })
+                })
+            })
+        })
     })
 })
 
-router.get('/dashboard/add', isAdmin, function(req, res, next){
+router.get('/dashboard/add',isLoggedIn, isAdmin, function(req, res, next){
+        Order.count(function(err,recentOrders){
             User.findById(req.user.id, function(err, foundUser){
-       res.render('admin/add', {users: foundUser}) 
+       res.render('admin/add', {users: foundUser, recentOrders : recentOrders}) 
+        })
     })
 });
 
@@ -518,36 +563,44 @@ router.post('/add', function(req,res,next){
 // });
 
 
-router.get('/dashboard/editdel', isAdmin, function(req, res, next){
+router.get('/dashboard/editdel',isLoggedIn, isAdmin, function(req, res, next){
+    Order.count(function(err,recentOrders){
     User.findById(req.user.id, function(err, foundUser){
     Product.find(function(err, foundProduct){
-       res.render('admin/editdel', {products: foundProduct, users:foundUser}) 
+       res.render('admin/editdel', {products: foundProduct, users:foundUser, recentOrders: recentOrders}) 
+        })
     })
   })
 })
 
-router.get('dashboard/edit/:id', isAdmin, function(req, res, next){
+router.get('dashboard/edit/:id',isLoggedIn, isAdmin, function(req, res, next){
+                Order.count(function(err,recentOrders){
     Product.findById(req.params.id, function(err, foundProduct){
-       res.render('admin/edit', {products: foundProduct}) 
+       res.render('admin/edit', {products: foundProduct, recentOrders: recentOrders}) 
+    })
     })
 })
 
-router.get('/dashboard/assortiment', isAdmin,  function(req, res, next){
+router.get('/dashboard/assortiment',isLoggedIn, isAdmin,  function(req, res, next){
+    Order.count(function(err,recentOrders){
     Product.find( function(err, foundProduct){
     User.findById(req.user.id, function(err, foundUser){
-       res.render('admin/assortiment', {products: foundProduct, users:foundUser}) 
+       res.render('admin/assortiment', {products: foundProduct, users:foundUser, recentOrders: recentOrders}) 
+    });
     });
     });
 });
 
 router.get('/dashboard/design-aanpassen', function(req, res, next){
+    Order.count(function(err,recentOrders){
     User.findById(req.user.id, function(err, foundUser){
     Title.find( function(err, foundTitles){
     Title1.find( function(err, foundTitles1){
     Title2.find( function(err, foundTitles2){
     Title3.find( function(err, foundTitles3){
     Title4.find( function(err, foundTitles4){
-       res.render('admin/design', {users: foundUser, titles: foundTitles, titles1: foundTitles1, titles2: foundTitles2, titles3: foundTitles3, titles4: foundTitles4}) 
+       res.render('admin/design', {users: foundUser, titles: foundTitles, titles1: foundTitles1, titles2: foundTitles2, titles3: foundTitles3, titles4: foundTitles4, recentOrders: recentOrders}) 
+    });
     });
     });
     });
@@ -557,14 +610,16 @@ router.get('/dashboard/design-aanpassen', function(req, res, next){
 });
 
 router.get('/dashboard/design-aanpassen/header1', function(req, res, next){
+    Order.count(function(err,recentOrders){
     Title.find(function(err, foundTitle){
     User.findById(req.user.id, function(err, foundUser){
-       res.render('admin/editheader1', {titles: foundTitle, users:foundUser}) 
+       res.render('admin/editheader1', {titles: foundTitle, users:foundUser, recentOrders: recentOrders}) 
+    });
     });
     });
 })
 //HEADER 1
-router.post("/editheader1", function(req, res) {
+router.post("/editheader1",isLoggedIn, isAdmin, function(req, res) {
     console.log(req.body);
     var mainImage = req.body.mainImage;
     var mainTitle = req.body.mainTitle;
@@ -594,7 +649,7 @@ router.post("/editheader1", function(req, res) {
 //     })
 // })
 
-router.post('/header1add', function(req,res,next){
+router.post('/header1add',isLoggedIn, isAdmin, function(req,res,next){
     Title.remove({}, function(err, next){
         if(err){
             console.log(err)
@@ -643,15 +698,17 @@ router.post('/header1add', function(req,res,next){
 });
 //HEADER 2
 
-router.get('/dashboard/design-aanpassen/header2', function(req, res, next){
+router.get('/dashboard/design-aanpassen/header2',isLoggedIn, isAdmin, function(req, res, next){
+    Order.count(function(err,recentOrders){
     Title.find(function(err, foundTitle){
     User.findById(req.user.id, function(err, foundUser){
-       res.render('admin/editheader2', {titles: foundTitle, users:foundUser}) 
+       res.render('admin/editheader2', {titles: foundTitle, users:foundUser, recentOrders: recentOrders}) 
+    });
     });
     });
 })
 
-router.post("/editheader2", function(req, res) {
+router.post("/editheader2",isLoggedIn, isAdmin, function(req, res) {
     console.log(req.body);
     var mainImage = req.body.mainImage;
     var mainTitle = req.body.mainTitle;
@@ -676,7 +733,7 @@ router.post("/editheader2", function(req, res) {
 });
 
 
-router.post('/header2add', function(req,res,next){
+router.post('/header2add',isLoggedIn, isAdmin, function(req,res,next){
     Title1.remove({}, function(err, next){
         if(err){
             console.log(err)
@@ -722,15 +779,17 @@ router.post('/header2add', function(req,res,next){
 });
 
 
-router.get('/dashboard/design-aanpassen/header2', function(req, res, next){
+router.get('/dashboard/design-aanpassen/header2',isLoggedIn, isAdmin, function(req, res, next){
+    Order.count(function(err,recentOrders){
     Title.find(function(err, foundTitle){
     User.findById(req.user.id, function(err, foundUser){
-       res.render('admin/editheader2', {titles: foundTitle, users:foundUser}) 
+       res.render('admin/editheader2', {titles: foundTitle, users:foundUser, recentOrders: recentOrders}) 
+    });
     });
     });
 })
 
-router.post("/editheader2", function(req, res) {
+router.post("/editheader2",isLoggedIn, isAdmin, function(req, res) {
     console.log(req.body);
     var mainImage = req.body.mainImage;
     var mainTitle = req.body.mainTitle;
@@ -755,7 +814,7 @@ router.post("/editheader2", function(req, res) {
 });
 
 
-router.post('/header2add', function(req,res,next){
+router.post('/header2add',isLoggedIn, isAdmin, function(req,res,next){
     Title1.remove({}, function(err, next){
         if(err){
             console.log(err)
@@ -801,15 +860,17 @@ router.post('/header2add', function(req,res,next){
 });
 
 
-router.get('/dashboard/design-aanpassen/header3', function(req, res, next){
+router.get('/dashboard/design-aanpassen/header3',isLoggedIn, isAdmin, function(req, res, next){
+    Order.count(function(err,recentOrders){
     Title2.find(function(err, foundTitle){
     User.findById(req.user.id, function(err, foundUser){
-       res.render('admin/editheader3', {titles: foundTitle, users:foundUser}) 
+       res.render('admin/editheader3', {titles: foundTitle, users:foundUser, recentOrders: recentOrders}) 
+    });
     });
     });
 })
 
-router.post("/editheader3", function(req, res) {
+router.post("/editheader3",isLoggedIn, isAdmin, function(req, res) {
     console.log(req.body);
     var mainImage = req.body.mainImage;
     var mainTitle = req.body.mainTitle;
@@ -834,7 +895,7 @@ router.post("/editheader3", function(req, res) {
 });
 
 
-router.post('/header3add', function(req,res,next){
+router.post('/header3add',isLoggedIn, isAdmin, function(req,res,next){
     Title2.remove({}, function(err, next){
         if(err){
             console.log(err)
@@ -882,15 +943,17 @@ router.post('/header3add', function(req,res,next){
 //HEADER4
 
 
-router.get('/dashboard/design-aanpassen/header4', function(req, res, next){
+router.get('/dashboard/design-aanpassen/header4',isLoggedIn, isAdmin, function(req, res, next){
+    Order.count(function(err,recentOrders){
     Title3.find(function(err, foundTitle){
     User.findById(req.user.id, function(err, foundUser){
-       res.render('admin/editheader4', {titles: foundTitle, users:foundUser}) 
+       res.render('admin/editheader4', {titles: foundTitle, users:foundUser, recentOrders: recentOrders}) 
+    });
     });
     });
 })
 
-router.post("/editheader4", function(req, res) {
+router.post("/editheader4",isLoggedIn, isAdmin, function(req, res) {
     console.log(req.body);
     var mainImage = req.body.mainImage;
     var mainTitle = req.body.mainTitle;
@@ -915,7 +978,7 @@ router.post("/editheader4", function(req, res) {
 });
 
 
-router.post('/header4add', function(req,res,next){
+router.post('/header4add',isLoggedIn, isAdmin, function(req,res,next){
     Title3.remove({}, function(err, next){
         if(err){
             console.log(err)
@@ -961,15 +1024,17 @@ router.post('/header4add', function(req,res,next){
 });
 
 
-router.get('/dashboard/design-aanpassen/header5', function(req, res, next){
+router.get('/dashboard/design-aanpassen/header5',isLoggedIn, isAdmin, function(req, res, next){
+    Order.count(function(err,recentOrders){
     Title4.find(function(err, foundTitle){
     User.findById(req.user.id, function(err, foundUser){
-       res.render('admin/editheader5', {titles: foundTitle, users:foundUser}) 
+       res.render('admin/editheader5', {titles: foundTitle, users:foundUser, recentOrders: recentOrders}) 
+    });
     });
     });
 })
 
-router.post("/editheader5", function(req, res) {
+router.post("/editheader5",isLoggedIn, isAdmin, function(req, res) {
     console.log(req.body);
     var mainImage = req.body.mainImage;
     var mainTitle = req.body.mainTitle;
@@ -994,7 +1059,7 @@ router.post("/editheader5", function(req, res) {
 });
 
 
-router.post('/header5add', function(req,res,next){
+router.post('/header5add',isLoggedIn, isAdmin, function(req,res,next){
     Title4.remove({}, function(err, next){
         if(err){
             console.log(err)
@@ -1039,9 +1104,11 @@ router.post('/header5add', function(req,res,next){
     });
 });
 
-router.get('/dashboard/mailinglist', function(req, res, next){
+router.get('/dashboard/mailinglist',isLoggedIn, isAdmin, function(req, res, next){
+    Order.count(function(err,recentOrders){
     User.find(function(err, foundUsers){
-       res.render('admin/mailinglist', {users: foundUsers}) 
+       res.render('admin/mailinglist', {users: foundUsers, recentOrders: recentOrders}) 
+    })
     })
 })
 
@@ -1051,37 +1118,226 @@ router.get('/dashboard/mailinglist', function(req, res, next){
 //     })
 // })
 
-router.get('/:id', function(req, res, next){
-    Product.findById(req.params.id, function(err, foundProduct){
-       res.render('shop/show', {products: foundProduct}) 
+router.get('/dashboard/bestellingen-recent',isLoggedIn, isAdmin, function(req, res, next){
+    Order.count(function(err,recentOrders){
+    Order.find(function(err, orders){
+        if (err) {
+            return res.write('Error!');
+        }
+        var cart;
+        orders.forEach(function(order) {
+            cart = new Cart(order.cart);
+            order.items = cart.generateArray();
+        });
+        User.findById(req.user.id, function(err, foundUser){
+        res.render('admin/bestellingen-recent', { orders: orders, users : foundUser, recentOrders: recentOrders});
+    });
+    });
+    });
+})
+
+router.get('/dashboard/bestellingen-archief',isLoggedIn, isAdmin, function(req, res, next){
+    Order.count(function(err,recentOrders){
+    archivedOrder.find( function(err, foundOrders){
+     return res.render('admin/bestellingen-archief', {orders: foundOrders, recentOrders:recentOrders}) 
+    })
     })
 })
 
-router.get('/:id', function(req, res, next){
-    Product.findById(req.params.id, function(err, foundProduct){
-       res.render('shop/show', {products: foundProduct}) 
+router.get('/reduce/:id', function(req, res, next) {
+    var productId = req.params.id;
+    var cart = new Cart(req.session.cart ? req.session.cart : {});
+
+    cart.reduceByOne(productId);
+    req.session.cart = cart;
+    res.redirect('/shopping-cart');
+});
+
+router.get('/bestellingen-archiveren/:id',isLoggedIn, isAdmin, function(req, res, next){
+        Order.findByIdAndRemove(req.params.id, function(err, order){
+            console.log(order)
+            console.log('order')
+        if (err) {
+            return res.write('Error!');
+        } else {
+         var cart = new Cart(order.cart);
+        order.items = cart.generateArray();
+            // console.log(foundOrder.items)
+          var orderArchive = new archivedOrder ({
+            cart : cart,
+            user : req.user,
+            paymentId: order.paymentId,
+            time: order.time,
+          })
+        //   console.log(archivedOrder)
+          console.log('archivedOrder')
+          orderArchive.save(function(err, result){
+              if(err){
+                  console.log(err)
+              } else {
+                  console.log(result)
+                  console.log('result')
+                  return res.redirect('/dashboard/bestellingen-recent')
+              }
+          })
+        }
     })
 })
 
-router.get('/:id', function(req, res, next){
-    Product.findById(req.params.id, function(err, foundProduct){
-       res.render('shop/show', {products: foundProduct}) 
+router.get('/bestellingen-activeren/:id',isLoggedIn, isAdmin, function(req, res, next){
+        archivedOrder.findByIdAndRemove(req.params.id, function(err, order){
+            console.log(order)
+            console.log('order-activate')
+        if (err) {
+            return res.write('Error!');
+        } else {
+         var cart = new Cart(order.cart);
+        order.items = cart.generateArray();
+            // console.log(foundOrder.items)
+          var orderActivate = new Order ({
+            cart : cart,
+            user : req.user,
+            paymentId: order.paymentId,
+            time: order.time,
+          })
+        //   console.log(archivedOrder)
+        //   console.log('archivedOrder')
+          orderActivate.save(function(err, result){
+              if(err){
+                  console.log(err)
+              } else {
+                  console.log(result)
+                  console.log('result-acti')
+                  return res.redirect('/dashboard/bestellingen-archief')
+              }
+          })
+        }
     })
 })
 
-router.get('/:id', function(req, res, next){
-    Product.findById(req.params.id, function(err, foundProduct){
-       res.render('shop/show', {products: foundProduct}) 
+
+router.get('/dashboard/admins',isLoggedIn, isAdmin, function(req, res, next){
+    Order.count(function(err,recentOrders){
+    User.find({isAdmin: true}, function(err, foundAdmins){
+        if(err){
+            console.log(err)
+        }
+        console.log(foundAdmins)
+       res.render('admin/admins', {admins: foundAdmins, recentOrders: recentOrders}) 
+    })
     })
 })
 
-router.get('/:id', function(req, res, next){
-    Product.findById(req.params.id, function(err, foundProduct){
-       res.render('shop/show', {products: foundProduct}) 
+router.get('/dashboard/contact',isLoggedIn, isAdmin, function(req, res, next){
+    Order.count(function(err,recentOrders){
+    User.findById(req.params.id, function(err, foundUser){
+       res.render('admin/contact', {user: foundUser, recentOrders: recentOrders}) 
+    })
     })
 })
 
-//SHOW
+router.get('/dashboard/een-fout-melden',isLoggedIn, isAdmin, function(req, res, next){
+    Order.count(function(err,recentOrders){
+    Product.findById(req.params.id, function(err, foundProduct){
+       res.render('admin/error', {products: foundProduct}) 
+    })
+    })
+})
+
+router.get('/dashboard/handleiding',isLoggedIn, isAdmin, function(req, res, next){
+    Order.count(function(err,recentOrders){
+    Product.findById(req.params.id, function(err, foundProduct){
+       res.render('admin/handleiding', {products: foundProduct}) 
+    })
+    })
+})
+
+
+router.post("/message", (req, res) => {
+    console.log(process.env.MAIL_PASS)
+    var name = (req.body.name);
+    var output = `
+    <h3> Nieuw bericht van ${req.body.name}.<h3>
+    <h5> Details <h5>
+    <ul>
+        <li>Naam : ${req.body.name}</li>
+        <li>Email : ${req.body.email}</li>
+        <li>Telefoon : ${req.body.ondw}</li>
+    </ul>
+    <p>${req.body.bericht}<p>
+    `;
+
+    // create reusable transporter object using the default SMTP transport
+    const transporter = nodemailer.createTransport({
+        host: 'smtp.gmail.com',
+        port: 587,
+        auth: {
+            user: 'mailserver163@gmail.com',
+            pass: process.env.MAIL_PASS
+        }
+    });
+    // setup email data with unicode symbols
+    let mailOptions = {
+        from: '"3DWD" <mailserver163@gmail.com>', // sender address
+        to: 'niek_losenoord@hotmail.com', // list of receivers
+        subject: name + ' Heeft een bericht gestuurd via de website.', // Subject line
+        text: '', // plain text body
+        html: output // html body
+    };
+    transporter.sendMail(mailOptions, (error, info) => {
+        if (error) {
+            return console.log(error);
+        }
+        console.log('Message sent: %s', info.messageId);
+        console.log('Preview URL: %s', nodemailer.getTestMessageUrl(info));
+        res.redirect("/dashboard")
+    });
+});
+
+
+router.post("/error", (req, res) => {
+    var name = (req.body.name);
+    var output = `
+    <h3> Nieuwe foutmelding van ${req.body.name}.<h3>
+    <h5> Details <h5>
+    <ul>
+        <li>Naam : ${req.body.name}</li>
+        <li>Email : ${req.body.email}</li>
+        <li>Foutmelding : ${req.body.error}</li>
+        <li>Intentie : ${req.body.intent}</li>
+        <li>URL : ${req.body.url}</li>
+        <li>Frequentie : ${req.body.freq}</li>
+    </ul>
+    <p>${req.body.bericht}<p>
+    `;
+
+    const transporter = nodemailer.createTransport({
+        host: 'smtp.gmail.com',
+        port: 587,
+        auth: {
+            user: 'mailserver163@gmail.com',
+            pass: process.env.MAIL_PASS
+        }
+    });
+    let mailOptions = {
+        from: '"3DWD" <mailserver163@gmail.com>', // sender address
+        to: 'niek_losenoord@hotmail.com', // list of receivers
+        subject: 'Nieuwe foutmelding', // Subject line
+        text: '', // plain text body
+        html: output // html body
+    };
+
+    transporter.sendMail(mailOptions, (error, info) => {
+        if (error) {
+            return console.log(error);
+        }
+        console.log('Message sent: %s', info.messageId);
+        console.log('Preview URL: %s', nodemailer.getTestMessageUrl(info));
+        res.redirect("/dashboard")
+
+    });
+});
+
 
 router.get('/:id', function(req, res, next){
     Product.findById(req.params.id, function(err, foundProduct){
@@ -1100,3 +1356,13 @@ function isLoggedIn(req, res, next) {
     req.session.oldUrl = req.url;
     res.redirect('/user/signin');
 }
+
+function isAdmin(req, res, next){
+    if(req.user.isAdmin !== true){
+       return res.redirect('/')
+    } else {
+        next()
+        console.log(req.user.isAdmin)
+    }
+}
+

@@ -6,12 +6,22 @@ var passport = require('passport');
 var Order = require('../models/order');
 var Cart = require('../models/cart');
 var User = require('../models/user');
+var archivedOrder = require('../models/orderarchive');
 
 var csrfProtection = csrf();
 router.use(csrfProtection);
 
 
 router.get('/profile', isLoggedIn, function (req, res, next) {
+    archivedOrder.find( function(err, archivedOrders) {
+        if (err) {
+            return res.write('Error!');
+        }
+        var cart;
+        archivedOrders.forEach(function(archivedOrder) {
+            cart = new Cart(archivedOrder.cart);
+            archivedOrder.items = cart.generateArray();
+        });
     Order.find({user: req.user}, function(err, orders) {
         if (err) {
             return res.write('Error!');
@@ -22,7 +32,8 @@ router.get('/profile', isLoggedIn, function (req, res, next) {
             order.items = cart.generateArray();
         });
         User.findById(req.user.id, function(err, foundUser){
-        res.render('user/profile', { orders: orders, users : foundUser });
+        res.render('user/profile', { orders: orders, archivedOrders: archivedOrders, users : foundUser });
+    });
     });
     });
 });
@@ -78,12 +89,13 @@ function isLoggedIn(req, res, next) {
     if (req.isAuthenticated()) {
         return next();
     }
-    res.redirect('/');
+    res.redirect('/user/signin');
 }
 
 function notLoggedIn(req, res, next) {
     if (!req.isAuthenticated()) {
         return next();
     }
-    res.redirect('/');
+    res.redirect('/user/signin');
 }
+

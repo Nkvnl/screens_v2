@@ -1,4 +1,5 @@
 {{>header}}
+<script src="../javascripts/scroll.js"></script>
 
 <div class="container-fluid" id="profile--header" style="height:40vh; background-position:top; background-image: linear-gradient(rgba(0,0,0,0.4), rgba(0,0,0,0.4)), url('https://images.pexels.com/photos/1467167/pexels-photo-1467167.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=650&w=940'); ">
 </div>    
@@ -8,7 +9,6 @@
 <div class="row">
     <div class="col-md-8 mx-auto">
         <h1 class="my-3">Gegevens</h1>
-        <hr>
         <div class="row">
             <div class="col-md-6">
                 <h3 class="">Naam </h3>         
@@ -39,32 +39,155 @@
        
             </div>
         </div>
-        <p></p>
-        <hr>
-        <h2>Bestellingen</h2>
+        <h2 class="alert alert-info my-5">Recente Bestellingen</h2>
         
-        {{#if orders}}
+       <div class="row" id="orders">
                 {{# each orders }}
-            <div class="panel panel-default">
-                <div class="panel-body">
-                    <ul class="list-group">
+            <div class="">
                         {{# each this.items }}
-                            <li class="list-group-item">
-                                <span class="badge">{{ this.price }}</span>
-                                {{ this.item.title }} | {{ this.qty }} Units
-                            </li>
+                <div class="row">
+                    <div class="col-sm-2"><img src="{{this.item.imagePath}}" class="img-fluid"></div>
+                        <div class="col-sm-8">
+                            <div class="col">
+                               <h2> {{ this.item.title }} <strong><span class="badge">X</span></strong> {{ this.qty }} </h2> 
+                            </div>
+                        </div>
+                            <div class="col">
+                                <h2>€ {{ this.price }}</h2>
+                            </div>
+                        <div class="col-sm-4">
+                        </div>
+                    </div>
                         {{/each}}
-                    </ul>
-                </div>
-                <div class="panel-footer">
-                    <strong>Total Price: ${{ this.cart.totalPrice }}</strong>
+                            <hr>
+                        <div class="row">
+                            <div class="col-md-8">
+                                <div class="row">
+                                    <div class="col-sm-5 text-right p-0">
+                                        <p>
+                                            Totaal bestelling: <br>
+                                            Datum : <br>
+                                            Stripe Betaal ID : <br>
+                                            Naam : <br>
+                                            Email :
+                                        </p>
+                                    </div>
+                                    <div class="col-sm-7 text-left p-0">
+                                        <p>
+                                            <strong>€{{ this.cart.totalPrice }}</strong><br> 
+                                            {{this.time}} <br> 
+                                            <span class="badge badge-success">{{this.paymentId}}</span> <br> 
+                                            {{this.user.name}}<br>
+                                            {{this.user.email}}
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="row">
+                                    <div class="col-sm-5 text-right p-0">
+                                        <p>
+                                            Straat <br>
+                                            Postcode : <br>
+                                            Plaats : <br>
+                                            Land : <br>
+                                        </p>
+                                    </div>
+                                    <div class="col-sm-7 text-left p-0">
+                                        <p>
+                                            <strong>{{ this.user.street }} {{this.user.number}}</strong><br> 
+                                            {{this.user.zip }} <br> 
+                                            {{this.user.city}}<br>
+                                            {{this.user.country}}<br>
+                                            {{!--<span class="badge badge-secondary">Gearchiveerd</span>--}}
+                                        </p>
+                                    </div>
+                                </div>
+                                
+                            </div>
+                        </div>
+                        <hr>
+                <div class="d-inline">
                 </div>
             </div>
+            <hr>
         {{/each}}
-        {{else}}
-        <h3 class="text-center alert alert-warning">Nog geen bestellingen</h3>
-
-        {{/if}}
+            </div>
+           <h2 class="alert alert-secondary my-5">Voltooide Bestellingen</h2>
+        
+       <div class="row" id="orders">
+                {{# each archivedOrders }}
+            <div class="">
+                        {{# each this.items }}
+                <div class="row">
+                    <div class="col-sm-2"><img src="{{this.item.imagePath}}" class="img-fluid"></div>
+                        <div class="col-sm-8">
+                            <div class="col">
+                               <h2> {{ this.item.title }} <strong><span class="badge">X</span></strong> {{ this.qty }} </h2> 
+                            </div>
+                        </div>
+                            <div class="col">
+                                <h2>€ {{ this.price }}</h2>
+                            </div>
+                        <div class="col-sm-4">
+                        </div>
+                    </div>
+                        {{/each}}
+                            <hr>
+                        <div class="row">
+                            <div class="col-md-8">
+                                <div class="row">
+                                    <div class="col-sm-5 text-right p-0">
+                                        <p>
+                                            Totaal bestelling: <br>
+                                            Datum : <br>
+                                            Stripe Betaal ID : <br>
+                                            Naam : <br>
+                                            Email :
+                                        </p>
+                                    </div>
+                                    <div class="col-sm-7 text-left p-0">
+                                        <p>
+                                            <strong>€{{ this.cart.totalPrice }}</strong><br> 
+                                            {{this.order.time}} <br> 
+                                            <span class="badge badge-success">{{this.order.paymentId}}</span> <br> 
+                                            {{this.order.user.name}}<br>
+                                            {{this.order.user.email}}
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="row">
+                                    <div class="col-sm-5 text-right p-0">
+                                        <p>
+                                            Straat <br>
+                                            Postcode : <br>
+                                            Plaats : <br>
+                                            Land : <br>
+                                        </p>
+                                    </div>
+                                    <div class="col-sm-7 text-left p-0">
+                                        <p>
+                                            <strong>{{ this.order.user.street }} {{this.order.user.number}}</strong><br> 
+                                            {{this.order.user.zip }} <br> 
+                                            {{this.order.user.city}}<br>
+                                            {{this.order.user.country}}<br>
+                                            {{!--<span class="badge badge-secondary">Gearchiveerd</span>--}}
+                                        </p>
+                                    </div>
+                                </div>
+                                
+                            </div>
+                        </div>
+                        <hr>
+                <div class="d-inline">
+                </div>
+            </div>
+            <hr>
+        {{/each}}
+            </div>
+        </div>
     </div>
 </div>
 </div>
