@@ -1,0 +1,217 @@
+
+<div id="loader" class="loader" style="display:block;">
+    <span></span>
+    <img src="../img/loader.png" class="spinner">
+</div>
+{{#if allDevices}}
+<div id="list" class="text-center">
+    {{#each allDevices}}
+    <div class="list-item">
+        <div onclick="showResult('{{this.id}}')" class="row px-5 onClick">
+            <div class="col-1" id="list-img" style="background:url('{{this.img}}');background-size:auto 40px;background-repeat:no-repeat;">
+            </div>
+            <div class="col">
+                <h6 class="brand">{{this.title}}</h6>
+            </div>
+            <div class="col-3 viewport">
+                <h6>{{this.viewport}}</h6>
+            </div>
+            <div class="col-2 date">
+                <h6>{{this.date}}</h6>
+            </div>
+            <div class="col-1 text-right">
+                <h6><span class="badge badge-success" id="list-popularity">{{this.popularity}}</span><br></h6>
+            </div>
+        </div>
+    </div> 
+    {{/each}}
+    {{else}}
+    {{/if}}
+
+    {{#if size}}
+<div id="list-size">
+        {{#each size}}
+    <div id="accordionExample{{this.device.id}}" class="accordion">
+        <div class="row px-5">
+            <div class="col-1">
+                <img class="device-img" src="{{this.thumb.img}}">
+            </div>
+            <div class="col-3">
+                <h6 class="brand">{{this._id}}</h6>
+            </div>
+            <div class="col-1">
+                <h6><span class="badge badge-dark">{{this.count}}</span><br></h6>
+            </div>
+            <div class="col-3">
+                <button class="btn btn-link" onclick="check('{{this._id}}','{{this.device.id}}')"  type="button" data-toggle="collapse" data-target="#collapseOne{{this.device.id}}" aria-expanded="false" aria-controls="collapseOne{{this.device.id}}">
+                    <img src="img/arrow.png" class="img-fluid p-3">
+                </button>      
+            </div>
+            <div class="col-2">
+                <h6><span class="badge badge-success" style="display:none;" id="round">{{this.popularity}}</span><br></h6>
+            </div>
+            <div class="col-1">
+            </div>
+             <div id="collapseOne{{this.device.id}}" class="collapse w-100" aria-labelledby="headingOne" data-parent="#accordionExample{{this.device.id}}">
+                <div class="size" id="_{{this.device.id}}" style="height:300px; overflow-y:scroll; overflow-x:hidden;">
+                    {{!--<div onclick="showResult('{{this.id}}')" class="row px-5 onClick">--}}
+                    {{!--    <div class="col-1" id="list-img" style="background:url('{{this.img}}');background-size:auto 40px;background-repeat:no-repeat;">--}}
+                    {{!--    </div>--}}
+                    {{!--    <div class="col">--}}
+                    {{!--        <h6 class="brand"></h6>--}}
+                    {{!--    </div>--}}
+                    {{!--    <div class="col-3 viewport">--}}
+                    {{!--        <h6>{{this.viewport}}</h6>--}}
+                    {{!--    </div>--}}
+                    {{!--    <div class="col-2 date">--}}
+                    {{!--        <h6>{{this.date}}</h6>--}}
+                    {{!--    </div>--}}
+                    {{!--    <div class="col-1 text-right">--}}
+                    {{!--        <h6><span class="badge badge-success" id="list-popularity">{{this.popularity}}</span><br></h6>--}}
+                    {{!--    </div>--}}
+                    {{!--</div>--}}
+                </div> 
+                <button class="btn btn-light w-100" onclick="check('{{this._id}}','{{this.device.id}}')">Load more...</button>
+            </div>
+        </div>
+    </div>    
+    {{/each}}
+    {{else}}
+    {{/if}}
+</div>    
+    <script>
+    var loader = document.querySelector('.loader');
+    loader.style.display = 'none';
+</script>
+
+
+</div>--}}
+{{!--    {{#if count}}--}}
+{{!--    {{#each count}}--}}
+
+{{!--    <div id="accordionExample{{this.device.id}}" class="accordion">--}}
+{{!--        <div class="row p-3">--}}
+{{!--            <div class="col-1">--}}
+{{!--                <img id="data" src="{{this._id}}">--}}
+{{!--            </div>--}}
+{{!--            <div class="col-2">--}}
+{{!--                <h6 class="title" id="result">...</h6>--}}
+{{!--            </div>--}}
+{{!--            <div class="col-1">--}}
+{{!--                <h6><span class="badge badge-dark">{{this.count}}</span><br></h6>--}}
+{{!--            </div>--}}
+{{!--            <div class="col-3">--}}
+{{!--                <button class="btn btn-link" type="button" data-toggle="collapse" data-target="#collapseOne{{this.device.id}}" aria-expanded="false" aria-controls="collapseOne{{this.device.id}}">--}}
+{{!--                    <img src="img/arrow.png" class="img-fluid px-3">--}}
+{{!--                </button>      --}}
+{{!--            </div>--}}
+{{!--            <div class="col-2">--}}
+                    
+{{!--            </div>--}}
+{{!--            <div class="col-2">--}}
+                    
+{{!--                <h6><span class="badge badge-success" style="display:none;" id="round">{{this.popularity}}</span><br></h6>--}}
+{{!--            </div>--}}
+{{!--            <div class="col-1">--}}
+{{!--            </div>--}}
+{{!--             <div id="collapseOne{{this.device.id}}" class="collapse w-100" aria-labelledby="headingOne" data-parent="#accordionExample{{this.device.id}}">--}}
+{{!--                {{#each this.devices}}--}}
+{{!--                <div class="row p-0 col-12 px-5" onclick="showResult('{{this.id}}')">--}}
+{{!--            <div class="col-1">--}}
+{{!--                <img class="device-img" src="{{this.img}}">--}}
+{{!--            </div>--}}
+{{!--            <div class="col-2">--}}
+{{!--                <img class="brand-img" src="{{this.logo}}">--}}
+{{!--            </div>--}}
+                
+{{!--            <div class="col text-center">--}}
+{{!--                <div class="row">--}}
+{{!--                    <div class="col-2">--}}
+{{!--                        <h6 class="brand">{{this.title}}</h6>--}}
+{{!--                    </div>--}}
+{{!--                    <div class="col-10">--}}
+{{!--                        <h6 class="title">{{this.type}}</h6>--}}
+{{!--                    </div>--}}
+{{!--                </div>--}}
+{{!--            </div>--}}
+{{!--            <div class="col-2 viewport">--}}
+{{!--                <h6>{{this.viewport}}</h6>--}}
+{{!--            </div>--}}
+{{!--            <div class="col-2">--}}
+{{!--                <img class="brand-img" src="{{this.device}}">--}}
+{{!--            </div>--}}
+{{!--            <div class="col-1 text-right">--}}
+{{!--                <h6><span class="badge badge-success">{{this.popularity}}</span><br></h6>--}}
+{{!--            </div>--}}
+{{!--        </div>--}}
+{{!--        {{/each}}--}}
+{{!--            </div>--}}
+{{!--        {{/each}}--}}
+{{!--        </div>--}}
+{{!--        </div>--}}
+{{!--        {{else}}--}}
+{{!--        {{/if}}--}}
+    {{!--    {{#if brands}}--}}
+    {{!--    {{#each brands}}--}}
+    {{!--<div id="accordionExample{{this.popularity}}" class="accordion">--}}
+    {{!--    <div class="row p-0">--}}
+    {{!--        <div class="col-1">--}}
+    {{!--            <img src="{{this.info.logo}}">--}}
+    {{!--        </div>--}}
+    {{!--        <div class="col-2">--}}
+    {{!--            <h6 class="brand">{{this._id}}</h6>--}}
+    {{!--        </div>--}}
+    {{!--        <div class="col-1">--}}
+    {{!--            <h6><span class="badge badge-dark">{{this.count}}</span><br></h6>--}}
+    {{!--        </div>--}}
+    {{!--        <div class="col-3">--}}
+    {{!--            <button class="btn btn-link" type="button" data-toggle="collapse" data-target="#collapseOne{{this.popularity}}" aria-expanded="false" aria-controls="collapseOne{{this._id}}">--}}
+    {{!--                <img src="img/arrow.png" class="img-fluid p-3">--}}
+    {{!--            </button>      --}}
+    {{!--        </div>--}}
+    {{!--        <div class="col-2">--}}
+                    
+    {{!--        </div>--}}
+    {{!--        <div class="col-2">--}}
+                    
+    {{!--            <h6><span class="badge badge-success" style="display:none;" id="round">{{this.popularity}}</span><br></h6>--}}
+    {{!--        </div>--}}
+    {{!--        <div class="col-1">--}}
+    {{!--        </div>--}}
+    {{!--         <div id="collapseOne{{this.popularity}}" class="collapse w-100" aria-labelledby="headingOne" data-parent="#accordionExample{{this.popularity}}">--}}
+    {{!--            {{#each this.devices}}--}}
+    {{!--            <div class="row p-0 col-12 px-5" onclick="showResult('{{this.id}}')">--}}
+    {{!--        <div class="col-1">--}}
+    {{!--            <img class="device-img" src="{{this.img}}">--}}
+    {{!--        </div>--}}
+    {{!--        <div class="col-2">--}}
+    {{!--            <img class="brand-img" src="{{this.logo}}">--}}
+    {{!--        </div>--}}
+                
+    {{!--        <div class="col text-center">--}}
+    {{!--            <div class="row">--}}
+    {{!--                <div class="col-2">--}}
+    {{!--                    <h6 class="brand">{{this.title}}</h6>--}}
+    {{!--                </div>--}}
+    {{!--                <div class="col-10">--}}
+    {{!--                    <h6 class="title">{{this.type}}</h6>--}}
+    {{!--                </div>--}}
+    {{!--            </div>--}}
+    {{!--        </div>--}}
+    {{!--        <div class="col-2 viewport">--}}
+    {{!--            <h6>{{this.viewport}}</h6>--}}
+    {{!--        </div>--}}
+    {{!--        <div class="col-2">--}}
+    {{!--            <img class="brand-img" src="{{this.device}}">--}}
+    {{!--        </div>--}}
+    {{!--        <div class="col-1 text-right">--}}
+    {{!--            <h6><span class="badge badge-success">{{this.popularity}}</span><br></h6>--}}
+    {{!--        </div>--}}
+    {{!--    </div>--}}
+    {{!--    {{/each}}--}}
+    {{!--        </div>--}}
+    {{!--    </div>--}}
+    {{!--</div> --}}
+    {{!--{{/each}}--}}
+    {{!--{{else}}--}}
+    {{!--{{/if}}--}}

@@ -1,0 +1,65 @@
+<div id="list">
+    {{#each count}}
+    <div id="accordionExample{{this.popularity}}" class="accordion">
+        <div class="row p-0">
+            <div class="col-1">
+                <img src="{{this.info.logo}}">
+            </div>
+            <div class="col-2">
+                <h6 class="brand">{{this._id}}</h6>
+            </div>
+            <div class="col-1">
+                <h6><span class="badge badge-dark">{{this.count}}</span><br></h6>
+            </div>
+            <div class="col-3">
+                <button class="btn btn-link" type="button" data-toggle="collapse" data-target="#collapseOne{{this.popularity}}" aria-expanded="false" aria-controls="collapseOne{{this._id}}">
+                    <img src="img/arrow.png" class="img-fluid p-3">
+                </button>      
+            </div>
+            <div class="col-2">
+                    
+            </div>
+            <div class="col-2">
+                    
+                <h6><span class="badge badge-success">{{this.popularity}}</span><br></h6>
+            </div>
+            <div class="col-1">
+            </div>
+             <div id="collapseOne{{this.popularity}}" class="collapse w-100" aria-labelledby="headingOne" data-parent="#accordionExample{{this.popularity}}">
+                {{#each this.devices}}
+                <div class="row p-0 col-12 px-5" onclick="showResult('{{this.id}}')">
+            <div class="col-1">
+                <img class="device-img" src="{{this.img}}">
+            </div>
+            <div class="col-2">
+                <img class="brand-img" src="{{this.logo}}">
+            </div>
+                
+            <div class="col text-center">
+                <div class="row">
+                    <div class="col-2">
+                        <h6 class="brand">{{this.brand}}</h6>
+                    </div>
+                    <div class="col-10">
+                        <h6 class="title">{{this.type}}</h6>
+                    </div>
+                </div>
+            </div>
+            <div class="col-2 viewport">
+                <h6>{{this.viewport}}</h6>
+            </div>
+            <div class="col-2">
+                <img class="brand-img" src="{{this.device}}">
+            </div>
+            <div class="col-1 text-right">
+                <h6><span class="badge badge-success">{{this.popularity}}</span><br></h6>
+            </div>
+        </div>
+        {{/each}}
+            </div>
+        </div>
+    </div> 
+    {{/each}}
+</div>
+
+

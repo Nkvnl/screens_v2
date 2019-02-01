@@ -1,0 +1,64 @@
+<div class="container-fluid">
+    <div class="col-md-11 mx-auto" id="application-box">
+        <div class="row">
+            <div class="col-md-3 p-0">
+                {{>sidebar}}
+            </div>
+            <div class="col-md-9 p-0" id="wrapper">
+                {{>header}}  
+                {{>list-size}}
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<script>
+var title = document.querySelector('#heh')
+var brand = document.querySelector('#br')
+var viewport = document.querySelector('#vp')
+var brandImg = document.querySelector('#device-brand')
+var deviceImg = document.querySelector('#big-device-img')
+var popularity = document.querySelector('#popularity')
+var header = document.querySelector('#header');
+var loader = document.querySelector('#loader');
+var max = document.querySelector('#max')
+var min = document.querySelector('#min')
+function showResult(str) {
+    showLoader()
+    var xmlHttp = null;
+    xmlHttp = new XMLHttpRequest();
+    xmlHttp.open( "GET", "/device/"+str, true );
+    xmlHttp.setRequestHeader("Content-Type", "json");
+    xmlHttp.send( null );
+    xmlHttp.onload = function(e) { 
+    if (this.status == 200) {
+       var result = JSON.parse(this.responseText)
+       var widthHeight = result.device.viewport.split('x', 4)
+       title.innerHTML = result.device.brand + ' ' + result.device.type;
+       brand.innerHTML = result.device.brand;
+       viewport.innerHTML = result.device.viewport;
+       brandImg.src = result.device.logo;
+       deviceImg.src = result.device.img;
+       popularity.innerHTML = result.device.popularity;
+       min.innerHTML = widthHeight[0] + 'px'
+       max.innerHTML = widthHeight[1] + 'px'
+    }
+};
+}
+function showLoader(){
+    console.log('showLoader')
+    loader.style.display = 'block';
+    setTimeout(hide, 700);
+}
+
+function hide(){
+    loader.style.display = 'none';
+}
+
+window.onload = function hideLoader() {
+    console.log('hideLoader')
+    loader.style.display = 'none';
+    // alert('hey')
+}
+</script>
