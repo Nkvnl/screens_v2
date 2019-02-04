@@ -43,7 +43,7 @@
                 <h6><span class="badge badge-dark">{{this.count}}</span><br></h6>
             </div>
             <div class="col-3">
-                <button class="btn btn-link" onclick="check('{{this._id}}','{{this.device.id}}')"  type="button" data-toggle="collapse" data-target="#collapseOne{{this.device.id}}" aria-expanded="false" aria-controls="collapseOne{{this.device.id}}">
+                <button class="btn btn-link" onclick="check('{{this._id}}','{{this.device.id}}','/brands/')"  type="button" data-toggle="collapse" data-target="#collapseOne{{this.device.id}}" aria-expanded="false" aria-controls="collapseOne{{this.device.id}}">
                     <img src="img/arrow.png" class="img-fluid p-3">
                 </button>      
             </div>
@@ -71,7 +71,57 @@
                     {{!--    </div>--}}
                     {{!--</div>--}}
                 </div> 
-                <button class="btn btn-light w-100" onclick="check('{{this._id}}','{{this.device.id}}')">Load more...</button>
+                <button class="btn btn-light w-100" onclick="check('{{this._id}}','{{this.device.id}}','/sizes/')">Load more...</button>
+            </div>
+        </div>
+    </div>    
+    {{/each}}
+    {{else}}
+    {{/if}}
+       {{#if brand}}
+<div id="list-size">
+        {{#each brand}}
+    <div id="accordionExample{{this.device.id}}" class="accordion">
+        <div class="row px-5">
+            <div class="col-1">
+                <img class="device-img" src="{{this.thumb.img}}">
+            </div>
+            <div class="col-3">
+                <h6 class="brand">{{this._id}}</h6>
+            </div>
+            <div class="col-1">
+                <h6><span class="badge badge-dark">{{this.count}}</span><br></h6>
+            </div>
+            <div class="col-3">
+                <button class="btn btn-link" onclick="check('{{this._id}}','{{this.device.id}}','/brands/')"  type="button" data-toggle="collapse" data-target="#collapseOne{{this.device.id}}" aria-expanded="false" aria-controls="collapseOne{{this.device.id}}">
+                    <img src="img/arrow.png" class="img-fluid p-3">
+                </button>      
+            </div>
+            <div class="col-2">
+                <h6><span class="badge badge-success" style="display:none;" id="round">{{this.popularity}}</span><br></h6>
+            </div>
+            <div class="col-1">
+            </div>
+             <div id="collapseOne{{this.device.id}}" class="collapse w-100" aria-labelledby="headingOne" data-parent="#accordionExample{{this.device.id}}">
+                <div class="size" id="_{{this.device.id}}" style="height:300px; overflow-y:scroll; overflow-x:hidden;">
+                    {{!--<div onclick="showResult('{{this.id}}')" class="row px-5 onClick">--}}
+                    {{!--    <div class="col-1" id="list-img" style="background:url('{{this.img}}');background-size:auto 40px;background-repeat:no-repeat;">--}}
+                    {{!--    </div>--}}
+                    {{!--    <div class="col">--}}
+                    {{!--        <h6 class="brand"></h6>--}}
+                    {{!--    </div>--}}
+                    {{!--    <div class="col-3 viewport">--}}
+                    {{!--        <h6>{{this.viewport}}</h6>--}}
+                    {{!--    </div>--}}
+                    {{!--    <div class="col-2 date">--}}
+                    {{!--        <h6>{{this.date}}</h6>--}}
+                    {{!--    </div>--}}
+                    {{!--    <div class="col-1 text-right">--}}
+                    {{!--        <h6><span class="badge badge-success" id="list-popularity">{{this.popularity}}</span><br></h6>--}}
+                    {{!--    </div>--}}
+                    {{!--</div>--}}
+                </div> 
+                <button class="btn btn-light w-100" onclick="check('{{this._id}}','{{this.device.id}}','/brands/')">Load more...</button>
             </div>
         </div>
     </div>    

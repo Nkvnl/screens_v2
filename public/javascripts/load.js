@@ -35,13 +35,10 @@ function showResult(str) {
     xmlHttp.onload = function(e) { 
     if (this.status == 200) {
        var result = JSON.parse(this.responseText)
-       var widthHeight = result.device.viewport.split('x', 4)
        title.innerHTML = result.device.title;
        viewport.innerHTML = result.device.viewport;
        deviceImg.src = result.device.img;
        popularity.innerHTML = result.device.popularity;
-       min.innerHTML = widthHeight[0] + 'px'
-       max.innerHTML = widthHeight[1] + 'px'
     }
     hide()
 };
@@ -114,22 +111,15 @@ async function getChunk(timesLoaded){
             var result = JSON.parse(this.responseText);    
             console.log(result)
       result.forEach(function(elem,index){
-      var promise = new Promise(function(resolve, reject){
-          insertHTML(list)
-        resolve();
-      }).then(function(){
-        newIndex++
-        document.querySelectorAll('.brand')[newIndex].innerHTML = result[index].title.replace(/"/g,"")
-        document.querySelectorAll('#list-img') [newIndex].style.backgroundImage = 'url(' + result[index].img + ')'
-        document.querySelectorAll('#list-popularity')  [newIndex].innerHTML = result[index].popularity
-        document.querySelectorAll('.viewport')[newIndex].innerHTML = result[index].viewport.replace(/"/g,"")
-        document.querySelectorAll('.date')[newIndex].innerHTML = result[index].date.replace(/[^0-9.]/g, "");;
-        document.querySelectorAll('.onClick')[newIndex -1].onclick = function(){ 
-            showResult(result[index]._id)
-                };
-            });
-        });
-    }
+        let title = result[index].title.replace(/"/g,"");
+        let img = result[index].img;
+        let viewport = result[index].viewport.replace(/"/g,"");
+        let popularity = result[index].popularity;
+        let date = result[index].date.replace(/[^0-9.]/g, "");
+        let click = result[index]._id;
+        insertHTML(list,title,img,popularity,date,click,viewport)  
+    });
+}
 }
 }
 
@@ -142,7 +132,7 @@ function se(re) {
 }
 
 
-function check(ID,dropDown){
+function check(ID,dropDown,reqType){
     res               = {"ID":ID,"timesLoaded":0}
     var result        = checkList.find(se);
     console.log(checkList)
@@ -150,16 +140,16 @@ function check(ID,dropDown){
         console.log('1');
         save()
         incrementTimesLoaded()
-        renderList(res.ID, dropDown, res.timesLoaded)
+        renderList(checkList[0].ID, dropDown, checkList[0].timesLoaded - 1, reqType)
     } else if(result.ID !== res.ID ){
         console.log('2');
         save()
         incrementTimesLoaded()
-        renderList(res.ID, dropDown, res.timesLoaded)
+        renderList(checkList[0].ID, dropDown, checkList[0].timesLoaded - 1, reqType)
     } else if(result.ID === res.ID){
         console.log('3');
         incrementTimesLoaded()
-        renderList(res.ID, dropDown,res.timesLoaded)
+        renderList(checkList[0].ID, dropDown,checkList[0].timesLoaded - 1, reqType)
     }
 }
 
@@ -169,58 +159,50 @@ function incrementTimesLoaded(){
 }
 
 function save(){
-   return checkList.push(res) 
+   return checkList.unshift(res) 
 }
 
 
-function renderList(ID, dropDown, timesLoaded){
-    var i                      = 0;
-    var t                      = false;
-    var r                      = false;
+function renderList(ID, dropDown, timesLoaded, reqType){
+    console.log(timesLoaded)
     var xmlHttp                = null;
     xmlHttp                    = new XMLHttpRequest();
-    xmlHttp.open               ( "GET", "/sizes/" + ID + '/' + timesLoaded, true );
+    xmlHttp.open               ( "GET", reqType + ID + '/' + timesLoaded, true );
     xmlHttp.setRequestHeader   ("Content-Type", "json");
     xmlHttp.send               ( null );
     xmlHttp.onload = function(e) { 
-        if (this.status == 200) {
-            var result = JSON.parse(this.responseText);
+        console.log(result)
+        var result = JSON.parse(this.responseText);
+        if(result === "End of list"){
+            return 'End of list'  
+        } else {
             result.forEach(function(elem,index){
-              var promise = new Promise(function(resolve, reject){
-                  document.querySelector("#_"+dropDown).insertAdjacentHTML('beforeend',' <div class="list-item"><div class="row px-5 onClick"><div class="col-1 list-img"  ></div><div class="col"><h6 class="brandSize"></h6></div><div class="col-3 viewport"><h6></h6></div><div class="col-2 date"><h6></h6></div><div class="col-1 text-right"><h6><span class="badge badge-success list-popularity"></span><br></h6></div></div></div> ')
-                  resolve();
-                  }).then(function(){ 
-                    var current = ($("#_"+dropDown));
-                    if(timesLoaded === 1 && r === false){
-                        console.log('if')
-                    k = 1;
-                    r = true
-                    } else if (t === false && r === false) {
-                        console.log('else')
-                    k = k + (17 * timesLoaded);
-                    console.log(k +' + (17 * timesLoaded) = 1 + ' + (17 + timesLoaded + 1))
-                    t = true
-                    }
-                    k++
-                    console.log(k)
-                    current.find('.brandSize')[k].innerHTML = result[index].title.replace(/"/g,"");
-                    current.find('.list-img')[k].style.backgroundImage = 'url(' + result[index].img + ')';
-                    current.find('.list-popularity')[k].innerHTML = result[index].popularity;
-                    current.find('.viewport')[k].innerHTML = result[index].viewport.replace(/"/g,"");
-                    current.find('.date')[k].innerHTML = result[index].date.replace(/[^0-9.]/g, "");
-                    current.find('.onClick')[k].onclick = function(){ 
-                    showResult(result[index]._id);
-                };
+            let current = document.querySelector("#_"+dropDown);
+            let title = result[index].title.replace(/"/g,"");
+            let img = result[index].img;
+            let viewport = result[index].viewport.replace(/"/g,"");
+            let popularity = result[index].popularity;
+            let date = result[index].date.replace(/[^0-9.]/g, "");
+            let click = result[index]._id;
+            insertHTML(current,title,img,popularity,date,click,viewport)                  
             });
-        });
+        }
     }
 }
-}
 
-function insertHTML(source){
-    source.insertAdjacentHTML('beforeend',' <div class="list-item"><div class="row px-5 onClick"><div class="col-1" id="list-img" ></div><div class="col"><h6 class="brand"></h6></div><div class="col-3 viewport"><h6></h6></div><div class="col-2 date"><h6></h6></div><div class="col-1 text-right"><h6><span class="badge badge-success" id="list-popularity"></span><br></h6></div></div></div> ')
-}
 
+// function insertHTML(source){
+//     console.log(source)
+//     source.insertAdjacentHTML('beforeend',' <div class="list-item"><div class="row px-5 onClick"><div class="col-1" id="list-img" ></div><div class="col"><h6 class="brand"></h6></div><div class="col-3 viewport"><h6></h6></div><div class="col-2 date"><h6></h6></div><div class="col-1 text-right"><h6><span class="badge badge-success" id="list-popularity"></span><br></h6></div></div></div> ')
+// }
+
+
+function insertHTML(source,title,img,popularity,date,click,viewport){
+    source.insertAdjacentHTML(
+      'beforeend',
+      '<div class="list-item"><div class="row px-5 onClick" onclick="showResult('+"'"+click+"'"+');"><div class="col-1" id="list-img" style="background:url('+ img +');"></div><div class="col"><h6 class="brand">' + title + '</h6></div><div class="col-3 viewport">' + viewport + '<h6></h6></div><div class="col-2 date">' + date + '<h6></h6></div><div class="col-1 text-right"><h6><span class="badge badge-success" id="list-popularity">' + popularity + '</span><br></h6></div></div></div> '
+                             )
+}
 
 
 

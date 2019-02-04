@@ -224,10 +224,10 @@ box-shadow: inset 0px -81px 165px -38px rgba(0,0,0,0.75);
     
 /*}*/
 
-.list-img{
+#list-img{
     /*background:green;*/
-    background-size:auto 40px;
-    background-repeat:no-repeat;
+    background-size:auto 40px!important;
+    background-repeat:no-repeat!important;
 }
 
 .device-img{

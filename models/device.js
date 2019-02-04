@@ -6,6 +6,7 @@ var schema = new Schema({
     viewport: String,
     popularity: Number,
     img: String,
+    brand: String,
     date: String
 });
 
